@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Branch Simulator</title>
+  <style>
+    body { font-family: system-ui, Arial; padding: 2rem; max-width: 720px; margin:auto; }
+    input, button { padding: .5rem; font-size: 1rem; }
+    .list { margin-top: 1rem; }
+    .branch { padding: .6rem .8rem; border-radius: 6px; background:#f7f9fc; margin-bottom: .5rem; display:flex; justify-content:space-between; align-items:center; }
+    .branch strong { font-weight:600; }
+  </style>
+</head>
+<body>
+  <h1>Branch Creator (simulator)</h1>
+
+  <label>
+    Branch name:
+    <input id="branchName" placeholder="feature/new-ui" />
+  </label>
+  <button id="createBtn">Create Branch</button>
+  <button id="resetBtn">Reset</button>
+
+  <div class="list" id="branches"></div>
+
+  <script>
+    const branches = ['main'];
+    const branchesEl = document.getElementById('branches');
+    const input = document.getElementById('branchName');
+
+    function render() {
+      branchesEl.innerHTML = '';
+      branches.forEach((b, i) => {
+        const div = document.createElement('div');
+        div.className = 'branch';
+        div.innerHTML = `<strong>${b}</strong> <button data-i="${i}" aria-label="delete">Delete</button>`;
+        branchesEl.appendChild(div);
+      });
+      // attach delete handlers
+      branchesEl.querySelectorAll('button[data-i]').forEach(btn => {
+        btn.addEventListener('click', e => {
+          const idx = Number(e.target.dataset.i);
+          if (branches[idx] === 'main') return alert('Cannot delete main branch.');
+          branches.splice(idx, 1);
+          render();
+        });
+      });
+    }
+
+    document.getElementById('createBtn').addEventListener('click', () => {
+      const name = input.value.trim();
+      if (!name) return alert('Enter a branch name.');
+      if (branches.includes(name)) return alert('Branch already exists.');
+      branches.push(name);
+      input.value = '';
+      render();
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      branches.splice(1); // keep main only
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>
